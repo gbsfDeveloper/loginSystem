@@ -18,10 +18,23 @@ server.get("/",(req,res) => {
     res.send("<h1>HOME PAGE</h1>");
 });
 
-server.post("/login",(req,res) => {
+server.post("/register",(req, res, next) => {
     let user = req.body.user;
     let password = req.body.password;
-    console.log(req.body); 
+    let conn = db.startConnection();
+
+    conn.query({
+        sql:`INSERT INTO login (user_name, user_location, user_active, user_password) VALUES (?, ?, ?, ?)`,
+        values: [user, "Mexico", 1, password]
+    }, function (error, results, fields) {
+        console.log("Insertado???");
+    });
+}
+
+server.post("/login",(req,res) => {
+    const body = JSON.parse(req.body);  
+    let user = body.user;
+    let password = body.password;
     let conn = db.startConnection();
     conn.query({
         sql:`SELECT * FROM login WHERE user_name = ? AND user_password= ?`,
